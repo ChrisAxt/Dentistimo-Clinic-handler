@@ -7,10 +7,10 @@ The clinic handler provides other components with dentistry data and updates the
 
 ## Component Responsibilities
 
-- Read dentist data from URL
+- Read dentist data from URL (https://raw.githubusercontent.com/feldob/dit355_2020/master/dentists.json)
 - Save dentist data to database
-- Listen to MQTT broker for dentist data requests from frontend
-- Publish dentistry data via MQTT
+- Listen to MQTT broker for dentist data requests from frontend (subscribed to topic: `get_all_clinics`)
+- Publish dentistry data via MQTT (publish to topic: `stored_new_clinic`)
 
 ## Data input and output
 ### Data input

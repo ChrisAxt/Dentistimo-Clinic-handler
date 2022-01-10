@@ -74,3 +74,13 @@ In the window of your broker, you should see a message similar to this:
 `1638885841: New client connected from 127.0.0.1:49531 as Dentistimo Team5 - Clinic Handler n°3c1ff99e (p2, c1, k60).`
 
 The Clinic Handler is now ready to proceed your requests. 
+
+
+## Closing/unsubscribing
+ When starting the component using `npm start`, the following message will appear in the terminal:
+
+![Screenshot_2022-01-10_at_17.56.33](/uploads/73bcf85aa958e62a987da47fbb7cf2d0/Screenshot_2022-01-10_at_17.56.33.png)
+
+  To unsubscribe,simply follow the commands specified in terminal: 
+     `x`and then press `enter`
+

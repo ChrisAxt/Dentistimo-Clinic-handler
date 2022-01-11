@@ -58,7 +58,7 @@ const publishAllClinics = async () => {
     mqtt.client.publish(
       mqtt.publishedTopics.storedClinicTopic,
       JSON.stringify(dentist),
-      { qos: 2 }
+      { qos: 1 }
     );
     console.log("Published dentists:" + dentist.name);
   });

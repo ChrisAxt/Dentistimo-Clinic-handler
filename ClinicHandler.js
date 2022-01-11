@@ -35,21 +35,16 @@ function circuitPublishAllClinic() {
   const publishAllClinicsBreaker = new CircuitBreaker (publishAllClinics(), breakerOptions)
   publishAllClinicsBreaker.on('close', () => notifyBreakerClosed());
   publishAllClinicsBreaker.on('open', () => notifyBreakerOpened());
-  publishAllClinicsBreaker.on('fire', () => notifyBreakerFired());
   publishAllClinicsBreaker.fire()
   // publishAllClinicsBreaker.open();
   // publishAllClinicsBreaker.close();
 }
 
 function notifyBreakerOpened() {
-  console.log('opened')
+  console.log('opened') //This should be replaced with something that publishes to the broker, triggering a reaction in the front end like disabling buttons for instance
 }
-
 function notifyBreakerClosed() {
-  console.log('closed')
-}
-function notifyBreakerFired() {
-  console.log('Fired')
+  console.log('closed') //This should be replaced with something that publishes to the broker, triggering a reaction in the front end like enabling buttons for instance
 }
 
 const getDentistDataFromGithub = async () => {

@@ -6,9 +6,9 @@ const database = require("./Database");
 const CircuitBreaker = require("opossum");
 
 const breakerOptions = {
-  timeout: 2000, // If our function takes longer than 2 seconds, trigger a failure
+  timeout: 3000, // If our function takes longer than 2 seconds, trigger a failure
   errorThresholdPercentage: 50, // When 50% of requests fail, trip the circuit
-  resetTimeout: 30000 // After 30 seconds, try again.
+  resetTimeout: 3000 // After 3 seconds, try again.
 };
 
 
@@ -35,7 +35,9 @@ function circuitPublishAllClinic() {
   const publishAllClinicsBreaker = new CircuitBreaker (publishAllClinics(), breakerOptions)
   publishAllClinicsBreaker.on('close', () => notifyBreakerClosed());
   publishAllClinicsBreaker.on('open', () => notifyBreakerOpened());
+  publishAllClinicsBreaker.on('timeout', () => notifyBreakerTimeout());
   publishAllClinicsBreaker.fire()
+  .catch(console.error)
   // publishAllClinicsBreaker.open();
   // publishAllClinicsBreaker.close();
 }
@@ -45,6 +47,9 @@ function notifyBreakerOpened() {
 }
 function notifyBreakerClosed() {
   console.log('closed') //This should be replaced with something that publishes to the broker, triggering a reaction in the front end like enabling buttons for instance
+}
+function notifyBreakerTimeout() {
+  console.log('timeout')
 }
 
 const getDentistDataFromGithub = async () => {
@@ -85,7 +90,7 @@ const publishAllClinics = async () => {
       JSON.stringify(dentist),
       { qos: 2 }
     );
-    console.log("Published dentists:" + dentist.name);
+    // console.log("Published dentists:" + dentist.name);
   });
 };
 

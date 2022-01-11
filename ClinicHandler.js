@@ -1,8 +1,17 @@
 require("dotenv").config();
-
+require("opossum")
 const fetch = require("node-fetch");
 const mqtt = require("./Mqtt");
 const database = require("./Database");
+const CircuitBreaker = require("opossum");
+
+const breakerOptions = {
+  timeout: 3000, // If our function takes longer than 2 seconds, trigger a failure
+  errorThresholdPercentage: 50, // When 50% of requests fail, trip the circuit
+  resetTimeout: 3000 // After 3 seconds, try again.
+};
+
+
 
 /**  Listens to message reception and reacts based on the topic */
 const listenToSubscriptions = () =>
@@ -11,8 +20,7 @@ const listenToSubscriptions = () =>
     console.log(topic);
     switch (topic) {
       case mqtt.subscribedTopics.getAllClinics:
-        console.log("Publish all clinics");
-        publishAllClinics();
+        circuitPublishAllClinic();
         break;
       case mqtt.subscribedTopics.getAClinic:
         getClinic(payload);
@@ -21,6 +29,28 @@ const listenToSubscriptions = () =>
         break;
     }
   });
+
+function circuitPublishAllClinic() {
+  console.log("Publish all clinics");
+  const publishAllClinicsBreaker = new CircuitBreaker (publishAllClinics(), breakerOptions)
+  publishAllClinicsBreaker.on('close', () => notifyBreakerClosed());
+  publishAllClinicsBreaker.on('open', () => notifyBreakerOpened());
+  publishAllClinicsBreaker.on('timeout', () => notifyBreakerTimeout());
+  publishAllClinicsBreaker.fire()
+  .catch(console.error)
+  // publishAllClinicsBreaker.open();
+  // publishAllClinicsBreaker.close();
+}
+
+function notifyBreakerOpened() {
+  console.log('opened') //This should be replaced with something that publishes to the broker, triggering a reaction in the front end like disabling buttons for instance
+}
+function notifyBreakerClosed() {
+  console.log('closed') //This should be replaced with something that publishes to the broker, triggering a reaction in the front end like enabling buttons for instance
+}
+function notifyBreakerTimeout() {
+  console.log('timeout')
+}
 
 const getDentistDataFromGithub = async () => {
   console.log("Fetching dentists from Github");
@@ -60,7 +90,7 @@ const publishAllClinics = async () => {
       JSON.stringify(dentist),
       { qos: 1 }
     );
-    console.log("Published dentists:" + dentist.name);
+    // console.log("Published dentists:" + dentist.name);
   });
 };
 
